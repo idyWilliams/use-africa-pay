@@ -1,9 +1,12 @@
-export type PaymentProvider = 'paystack' | 'flutterwave' | 'monnify';
+export type PaymentProvider = 'paystack' | 'flutterwave' | 'monnify' | 'remita';
+
+export type PaymentStatus = 'pending' | 'success' | 'failed' | 'cancelled';
 
 export interface UserConfig {
   email: string;
-  name?: string; // Required by Monnify
+  name?: string; // Required by Monnify, Remita
   phonenumber?: string; // Required by Flutterwave
+  phone?: string; // Alternative for phone number
 }
 
 export interface BaseConfig {
@@ -12,6 +15,8 @@ export interface BaseConfig {
   reference: string;
   publicKey: string;
   contractCode?: string; // Specific to Monnify
+  merchantId?: string; // Specific to Remita
+  serviceTypeId?: string; // Specific to Remita
   metadata?: Record<string, any>;
 }
 
@@ -21,12 +26,62 @@ export interface AdapterConfig extends BaseConfig {
   onClose: () => void;
 }
 
+// Enhanced Payment Response
 export interface PaymentResponse {
-  status: 'success' | 'failed';
+  status: PaymentStatus;
+  message: string;
   reference: string;
-  transactionId?: string; // Provider's internal ID
+  transactionId?: string;
+  amount: number;
+  currency: string;
+  paidAt?: string; // ISO 8601 timestamp
+  customer: {
+    email: string;
+    name?: string;
+    phone?: string;
+  };
   provider: PaymentProvider;
-  raw: any; // The original response object
+  metadata?: Record<string, any>;
+  raw: any; // Original provider response
+}
+
+// Custom Error Types
+export class PaymentError extends Error {
+  constructor(
+    message: string,
+    public code: string,
+    public provider?: PaymentProvider,
+    public suggestion?: string
+  ) {
+    super(message);
+    this.name = 'PaymentError';
+  }
+}
+
+export class ValidationError extends PaymentError {
+  constructor(message: string, suggestion?: string) {
+    super(message, 'VALIDATION_ERROR', undefined, suggestion);
+    this.name = 'ValidationError';
+  }
+}
+
+export class NetworkError extends PaymentError {
+  constructor(message: string, provider?: PaymentProvider) {
+    super(
+      message,
+      'NETWORK_ERROR',
+      provider,
+      'Check your internet connection and try again.'
+    );
+    this.name = 'NetworkError';
+  }
+}
+
+export class ProviderError extends PaymentError {
+  constructor(message: string, provider: PaymentProvider, suggestion?: string) {
+    super(message, 'PROVIDER_ERROR', provider, suggestion);
+    this.name = 'ProviderError';
+  }
 }
 
 export interface AdapterInterface {

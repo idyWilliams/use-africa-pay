@@ -34,15 +34,25 @@ export const MonnifyAdapter: AdapterInterface = {
       onComplete: (response: any) => {
         // Monnify response
         const status = response.status === 'PAID' || response.status === 'SUCCESS' ? 'success' : 'failed';
-        const res: PaymentResponse = {
+        const paymentResponse: PaymentResponse = {
           status,
+          message: status === 'success' ? 'Payment completed successfully' : 'Payment failed',
           reference: response.paymentReference,
           transactionId: response.transactionReference,
+          amount: config.amount,
+          currency: config.currency,
+          paidAt: new Date().toISOString(),
+          customer: {
+            email: config.user.email,
+            name: config.user.name,
+            phone: config.user.phonenumber || config.user.phone,
+          },
           provider: 'monnify',
+          metadata: config.metadata,
           raw: response,
         };
         if (status === 'success') {
-          config.onSuccess(res);
+          config.onSuccess(paymentResponse);
         }
       },
       onClose: (data: any) => {

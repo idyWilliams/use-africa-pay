@@ -28,16 +28,26 @@ export const FlutterwaveAdapter: AdapterInterface = {
         name: config.user.name,
       },
       meta: config.metadata,
-      callback: (data: any) => {
-        if (data.status === 'successful') {
-          const response: PaymentResponse = {
+      callback: (response: any) => {
+        if (response.status === 'successful') {
+          const paymentResponse: PaymentResponse = {
             status: 'success',
-            reference: data.tx_ref,
-            transactionId: data.transaction_id,
+            message: 'Payment completed successfully',
+            reference: response.tx_ref,
+            transactionId: response.transaction_id,
+            amount: config.amount,
+            currency: config.currency,
+            paidAt: new Date().toISOString(),
+            customer: {
+              email: config.user.email,
+              name: config.user.name,
+              phone: config.user.phonenumber || config.user.phone,
+            },
             provider: 'flutterwave',
-            raw: data,
+            metadata: config.metadata,
+            raw: response,
           };
-          config.onSuccess(response);
+          config.onSuccess(paymentResponse);
         }
       },
       onclose: () => {

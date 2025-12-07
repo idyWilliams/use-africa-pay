@@ -22,9 +22,19 @@ export const PaystackAdapter: AdapterInterface = {
       callback: (response: any) => {
         const paymentResponse: PaymentResponse = {
           status: 'success',
+          message: 'Payment completed successfully',
           reference: response.reference,
           transactionId: response.trans || response.transaction,
+          amount: config.amount,
+          currency: config.currency,
+          paidAt: new Date().toISOString(),
+          customer: {
+            email: config.user.email,
+            name: config.user.name,
+            phone: config.user.phonenumber || config.user.phone,
+          },
           provider: 'paystack',
+          metadata: config.metadata,
           raw: response,
         };
         config.onSuccess(paymentResponse);
