@@ -1,6 +1,6 @@
 {
   "name": "@use-africa-pay/core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A unified React hook for African payment gateways (Paystack, Flutterwave, Monnify)",
   "keywords": [
     "react",
