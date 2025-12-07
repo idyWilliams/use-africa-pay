@@ -9,6 +9,7 @@ build
 # Next.js
 .next
 out
+PUBLISHING.md
 
 # Misc
 .DS_Store
