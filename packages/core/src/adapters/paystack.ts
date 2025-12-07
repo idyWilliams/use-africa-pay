@@ -12,27 +12,28 @@ export const PaystackAdapter: AdapterInterface = {
     await loadScript('https://js.paystack.co/v1/inline.js');
   },
   initialize: (config: AdapterConfig) => {
-    const paystack = new window.PaystackPop();
-    paystack.newTransaction({
+    const handler = window.PaystackPop.setup({
       key: config.publicKey,
       email: config.user.email,
       amount: config.amount, // Paystack expects kobo/lowest denomination
       currency: config.currency,
       ref: config.reference,
       metadata: config.metadata,
-      onSuccess: (transaction: any) => {
-        const response: PaymentResponse = {
+      callback: (response: any) => {
+        const paymentResponse: PaymentResponse = {
           status: 'success',
-          reference: transaction.reference,
-          transactionId: transaction.transaction,
+          reference: response.reference,
+          transactionId: response.trans || response.transaction,
           provider: 'paystack',
-          raw: transaction,
+          raw: response,
         };
-        config.onSuccess(response);
+        config.onSuccess(paymentResponse);
       },
-      onCancel: () => {
+      onClose: () => {
         config.onClose();
       },
     });
+
+    handler.openIframe();
   },
 };
