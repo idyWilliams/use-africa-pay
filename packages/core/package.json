@@ -1,0 +1,57 @@
+{
+  "name": "@use-africa-pay/core",
+  "version": "0.0.1",
+  "description": "A unified React hook for African payment gateways (Paystack, Flutterwave, Monnify)",
+  "keywords": [
+    "react",
+    "hook",
+    "payment",
+    "africa",
+    "paystack",
+    "flutterwave",
+    "monnify"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/idyWilliams/use-africa-pay.git"
+  },
+  "bugs": {
+    "url": "https://github.com/idyWilliams/use-africa-pay/issues"
+  },
+  "homepage": "https://github.com/idyWilliams/use-africa-pay#readme",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch",
+    "lint": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "vite-plugin-dts": "^3.0.0",
+    "typescript": "^5.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0"
+  }
+}
