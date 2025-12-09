@@ -36,7 +36,7 @@ pnpm build
 
 ### Running in Development Mode
 
-To run the project in watch mode (if applicable):
+To run the project in watch mode:
 
 ```bash
 pnpm dev
@@ -58,7 +58,7 @@ pnpm format
     git checkout -b feature/my-new-feature
     ```
 2.  Make your changes.
-3.  Run tests (if available) and ensure the build passes:
+3.  Run tests and ensure the build passes:
     ```bash
     pnpm build
     ```

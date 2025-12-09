@@ -178,7 +178,7 @@ initializePayment({
 
 If you discover a security vulnerability, please email us at:
 
-**security@use-africa-pay.dev** (or your actual email)
+**widorenyin0@gmail.com**
 
 Please include:
 - Description of the vulnerability
