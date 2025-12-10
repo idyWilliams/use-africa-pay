@@ -5,11 +5,15 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "pnpm build && changeset publish"
   },
   "devDependencies": {
-    "turbo": "latest",
+    "@changesets/cli": "^2.29.8",
     "prettier": "latest",
+    "turbo": "latest",
     "typescript": "^5.0.0"
   },
   "packageManager": "pnpm@9.15.0"

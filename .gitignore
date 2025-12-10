@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # Turbo
 .turbo
+
+# GitHub Issues Document
+GITHUB_ISSUES.md
