@@ -10,7 +10,7 @@ build
 .next
 out
 PUBLISHING.md
-GITHUB_RELEASE_GUIDE.md
+
 
 # Misc
 .DS_Store
@@ -29,3 +29,7 @@ pnpm-debug.log*
 
 # GitHub Issues Document
 GITHUB_ISSUES.md
+GITHUB_RELEASE_GUIDE.md
+DEPLOY_RN.md
+SUMMARY.md
+IMPLEMENTATION.md
