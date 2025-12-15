@@ -1,6 +1,8 @@
 # @use-africa-pay/react-native
 
-A unified React Native payment integration for African payment gateways (Paystack, Flutterwave, Monnify, Remita).
+A unified, type-safe React Native payment integration SDK for African payment gateways. Seamlessly integrate **Paystack**, **Flutterwave**, **Monnify**, and **Remita** into your iOS and Android apps with a single API.
+
+Supports **Nigeria**, **Ghana**, **Kenya**, **South Africa**, and more.
 
 ## Features
 
@@ -205,6 +207,7 @@ interface InitializePaymentProps {
     name?: string;
     phonenumber?: string;
   };
+  testMode?: boolean; // Optional: Set false for Live (Crucial for Remita). Defaults to true.
   // Provider-specific
   contractCode?: string; // Monnify
   merchantId?: string; // Remita

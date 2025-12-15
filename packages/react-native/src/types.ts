@@ -18,6 +18,7 @@ export interface BaseConfig {
   merchantId?: string; // Specific to Remita
   serviceTypeId?: string; // Specific to Remita
   metadata?: Record<string, any>;
+  testMode?: boolean; // Toggle between Test (Demo) and Live environments
 }
 
 export interface PaymentConfig extends BaseConfig {

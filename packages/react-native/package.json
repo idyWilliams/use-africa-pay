@@ -1,7 +1,7 @@
 {
   "name": "@use-africa-pay/react-native",
-  "version": "0.1.0",
-  "description": "React Native payment integration for African payment gateways (Paystack, Flutterwave, Monnify, Remita)",
+  "version": "0.1.1",
+  "description": "React Native unified payment integration for African payment gateways (Paystack, Flutterwave, Monnify, Remita)",
   "keywords": [
     "react-native",
     "payment",
@@ -14,7 +14,12 @@
     "ios",
     "android",
     "fintech",
-    "sdk"
+    "sdk",
+    "nigeria",
+    "ghana",
+    "kenya",
+    "south africa",
+    "payment gateway"
   ],
   "author": {
     "name": "Idorenyin Williams",
