@@ -9,6 +9,7 @@ declare global {
 
 export const FlutterwaveAdapter: AdapterInterface = {
   loadScript: async () => {
+    // Flutterwave uses the same URL for test and live
     await loadScript('https://checkout.flutterwave.com/v3.js');
   },
   initialize: (config: AdapterConfig) => {

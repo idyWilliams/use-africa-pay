@@ -21,6 +21,7 @@ const handlePayment = () => {
   initializePayment({
     provider: 'paystack',
     adapter: PaystackAdapter, // Pass the adapter instance
+    testMode: true, // Optional: Defaults to true
     publicKey: 'pk_test_...',
     amount: 5000,
     currency: 'NGN',

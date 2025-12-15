@@ -9,6 +9,7 @@ declare global {
 
 export const PaystackAdapter: AdapterInterface = {
   loadScript: async () => {
+    // Paystack uses the same URL for test and live
     await loadScript('https://js.paystack.co/v1/inline.js');
   },
   initialize: (config: AdapterConfig) => {

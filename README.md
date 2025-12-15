@@ -167,6 +167,7 @@ import { useAfricaPay, RemitaAdapter } from '@use-africa-pay/core';
 initializePayment({
   provider: 'remita',
   adapter: RemitaAdapter,
+  testMode: true, // Optional: Defaults to true (Demo). Set to false for Live.
   publicKey: 'YOUR_REMITA_PUBLIC_KEY',
   merchantId: 'YOUR_MERCHANT_ID',
   serviceTypeId: 'YOUR_SERVICE_TYPE_ID',
@@ -225,6 +226,7 @@ All providers require:
 - `currency`: Currency code (e.g., 'NGN')
 - `reference`: Unique transaction reference
 - `user.email`: Customer email
+- `testMode`: (Optional) Set `false` for Live mode (Crucial for Remita). Defaults to `true`.
 
 Provider-specific requirements documented in table above.
 

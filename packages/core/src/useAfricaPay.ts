@@ -129,8 +129,8 @@ export const useAfricaPay = () => {
       // We cast to any because sanitizedConfig might have slightly different types but it's safe here
       validateConfig({ ...props, ...sanitizedConfig } as any);
 
-      // Lazy load the script
-      await currentAdapter.loadScript();
+      // Lazy load the script with testMode option
+      await currentAdapter.loadScript({ testMode: props.testMode });
 
       currentAdapter.initialize({
         ...sanitizedConfig,

@@ -20,7 +20,9 @@ export interface BaseConfig {
   onSuccess?: (response: PaymentResponse) => void;
   onClose?: () => void;
   onError?: (error: PaymentError) => void;
+  // onError?: (error: PaymentError) => void;
   adapter?: AdapterInterface; // Allow passing adapter instance directly
+  testMode?: boolean; // Toggle between Test/See-Sandbox and Live environments (Crucial for Remita)
 }
 
 // Provider-specific configurations
@@ -123,7 +125,7 @@ export class ProviderError extends PaymentError {
 }
 
 export interface AdapterInterface {
-  loadScript: () => Promise<void>;
+  loadScript: (options?: { testMode?: boolean }) => Promise<void>;
   initialize: (config: AdapterConfig) => void;
   getInstance: () => any; // Escape hatch to get underlying provider instance
 }

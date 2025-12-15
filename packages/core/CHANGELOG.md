@@ -1,5 +1,12 @@
 # @use-africa-pay/core
 
+## 1.2.1
+
+### Patch Changes
+
+- **Test Mode Support**: Added `testMode` prop to configuration.
+- **Remita Environment**: Fixed Remita defaulting to Demo URL. Set `testMode: false` to use Live URL.
+
 ## 1.2.0
 
 ### Minor Changes

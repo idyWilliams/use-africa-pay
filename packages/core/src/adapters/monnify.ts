@@ -9,6 +9,7 @@ declare global {
 
 export const MonnifyAdapter: AdapterInterface = {
   loadScript: async () => {
+    // Monnify uses the same URL for test and live
     await loadScript('https://sdk.monnify.com/plugin/monnify.js');
   },
   initialize: (config: AdapterConfig) => {

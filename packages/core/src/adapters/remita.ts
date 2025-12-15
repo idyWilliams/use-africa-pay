@@ -8,8 +8,13 @@ declare global {
 }
 
 export const RemitaAdapter: AdapterInterface = {
-  loadScript: async () => {
-    await loadScript('https://remitademo.net/payment/v1/remita-pay-inline.bundle.js');
+  loadScript: async (options = { testMode: true }) => {
+    // Default to Test Mode (Demo) if not specified, for safety
+    const isTestMode = options.testMode !== false;
+    const url = isTestMode
+      ? 'https://remitademo.net/payment/v1/remita-pay-inline.bundle.js'
+      : 'https://login.remita.net/payment/v1/remita-pay-inline.bundle.js';
+    await loadScript(url);
   },
   initialize: (config: AdapterConfig) => {
     if (!config.merchantId) {
