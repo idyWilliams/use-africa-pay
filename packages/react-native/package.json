@@ -10,9 +10,17 @@
     "flutterwave",
     "monnify",
     "remita",
-    "mobile"
+    "mobile",
+    "ios",
+    "android",
+    "fintech",
+    "sdk"
   ],
-  "author": "Idy Williams",
+  "author": {
+    "name": "Idorenyin Williams",
+    "email": "widorenyin0@gmail.com",
+    "url": "https://idorenyinwilliams.com/"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",

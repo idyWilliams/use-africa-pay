@@ -1,17 +1,12 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
-  PaymentProvider,
-  AdapterConfig,
-  AdapterInterface,
+  InitializePaymentProps,
   PaymentResponse,
   PaymentError,
   ValidationError,
   NetworkError,
+  AdapterInterface,
 } from './types';
-import { PaystackAdapter } from './adapters/paystack';
-import { FlutterwaveAdapter } from './adapters/flutterwave';
-import { MonnifyAdapter } from './adapters/monnify';
-import { RemitaAdapter } from './adapters/remita';
 import {
   sanitizeEmail,
   sanitizeName,
@@ -21,23 +16,10 @@ import {
   redactSensitiveData,
 } from './utils/sanitize';
 
-const ADAPTERS: Record<PaymentProvider, AdapterInterface> = {
-  paystack: PaystackAdapter,
-  flutterwave: FlutterwaveAdapter,
-  monnify: MonnifyAdapter,
-  remita: RemitaAdapter,
-};
-
-export interface InitializePaymentProps extends Omit<AdapterConfig, 'onSuccess' | 'onClose'> {
-  provider: PaymentProvider;
-  onSuccess?: (response: PaymentResponse) => void;
-  onClose?: () => void;
-  onError?: (error: PaymentError) => void;
-}
-
 export const useAfricaPay = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<PaymentError | null>(null);
+  const adapterRef = useRef<AdapterInterface | null>(null);
 
   const reset = () => {
     setLoading(false);
@@ -45,7 +27,7 @@ export const useAfricaPay = () => {
   };
 
   const validateConfig = (props: InitializePaymentProps): void => {
-    const { provider, user, amount, publicKey, contractCode, merchantId, serviceTypeId } = props;
+    const { provider, user, amount, publicKey } = props;
 
     // Basic validation
     if (!publicKey) {
@@ -61,14 +43,14 @@ export const useAfricaPay = () => {
     }
 
     // Provider-specific validation
-    if (provider === 'monnify') {
-      if (!contractCode) {
+    if (props.provider === 'monnify') {
+      if (!props.contractCode) {
         throw new ValidationError(
           'Contract Code is required for Monnify',
           'Please provide your Monnify contract code'
         );
       }
-      if (!user.name) {
+      if (!props.user.name) {
         throw new ValidationError(
           'Customer name is required for Monnify',
           'Please provide the customer name'
@@ -76,8 +58,8 @@ export const useAfricaPay = () => {
       }
     }
 
-    if (provider === 'flutterwave') {
-      if (!user.phonenumber && !user.phone) {
+    if (props.provider === 'flutterwave') {
+      if (!props.user.phonenumber && !props.user.phone) {
         throw new ValidationError(
           'Phone number is required for Flutterwave',
           'Please provide the customer phone number'
@@ -85,20 +67,20 @@ export const useAfricaPay = () => {
       }
     }
 
-    if (provider === 'remita') {
-      if (!merchantId) {
+    if (props.provider === 'remita') {
+      if (!props.merchantId) {
         throw new ValidationError(
           'Merchant ID is required for Remita',
           'Please provide your Remita merchant ID'
         );
       }
-      if (!serviceTypeId) {
+      if (!props.serviceTypeId) {
         throw new ValidationError(
           'Service Type ID is required for Remita',
           'Please provide your Remita service type ID'
         );
       }
-      if (!user.name) {
+      if (!props.user.name) {
         throw new ValidationError(
           'Customer name is required for Remita',
           'Please provide the customer name'
@@ -111,19 +93,23 @@ export const useAfricaPay = () => {
     setLoading(true);
     setError(null);
 
-    const { provider, onError, ...config } = props;
-    const adapter = ADAPTERS[provider];
+    const { provider, onError, adapter, ...config } = props;
 
-    if (!adapter) {
+    // Use passed adapter or fallback to what's in ref (if any)
+    const currentAdapter = adapter || adapterRef.current;
+
+    if (!currentAdapter) {
       const err = new ValidationError(
-        `Invalid provider: ${provider}`,
-        'Please use one of: paystack, flutterwave, monnify, remita'
+        `No adapter provided for ${provider}`,
+        'Please pass an adapter instance (e.g. adapter: PaystackAdapter) to initializePayment'
       );
       setLoading(false);
       setError(err);
       if (onError) onError(err);
       return;
     }
+
+    adapterRef.current = currentAdapter;
 
     try {
       // Sanitize all user inputs before validation
@@ -140,13 +126,18 @@ export const useAfricaPay = () => {
       };
 
       // Validate configuration with sanitized data
-      validateConfig({ ...props, ...sanitizedConfig });
+      // We cast to any because sanitizedConfig might have slightly different types but it's safe here
+      validateConfig({ ...props, ...sanitizedConfig } as any);
 
       // Lazy load the script
-      await adapter.loadScript();
+      await currentAdapter.loadScript();
 
-      adapter.initialize({
+      currentAdapter.initialize({
         ...sanitizedConfig,
+        provider, // Explicitly pass provider
+        amount: config.amount,
+        currency: config.currency,
+        publicKey: config.publicKey,
         onSuccess: (response) => {
           setLoading(false);
           if (props.onSuccess) props.onSuccess(response);
@@ -175,7 +166,8 @@ export const useAfricaPay = () => {
           safeMessage,
           'UNKNOWN_ERROR',
           provider,
-          'Please try again or contact support if the issue persists'
+          'Please try again or contact support if the issue persists',
+          err // Pass raw error
         );
       }
 
@@ -185,11 +177,16 @@ export const useAfricaPay = () => {
         code: paymentError.code,
         provider: paymentError.provider,
         message: redactSensitiveData(paymentError.message),
+        raw: paymentError.rawError
       });
 
       if (onError) onError(paymentError);
     }
   };
 
-  return { initializePayment, loading, error, reset };
+  const getProviderInstance = () => {
+    return adapterRef.current?.getInstance();
+  };
+
+  return { initializePayment, loading, error, reset, getProviderInstance };
 };

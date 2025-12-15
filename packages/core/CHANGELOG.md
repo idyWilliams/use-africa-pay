@@ -1,5 +1,14 @@
 # @use-africa-pay/core
 
+## 1.2.0
+
+### Minor Changes
+
+- **Modular Architecture**: Decoupled adapters to allow for tree-shaking. You must now pass the adapter instance to `initializePayment`.
+- **Type Safety**: Implemented Discriminated Unions for stricter type checking of provider-specific props.
+- **Escape Hatches**: Added `getProviderInstance()` to access the underlying provider SDK.
+- **Enhanced Error Handling**: `PaymentError` now includes the `rawError` from the provider.
+
 ## 1.1.1
 
 ### Patch Changes

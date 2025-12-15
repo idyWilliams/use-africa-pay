@@ -19,6 +19,7 @@ export const PaystackAdapter: AdapterInterface = {
       currency: config.currency,
       ref: config.reference,
       metadata: config.metadata,
+      channels: config.channels, // Pass channels if available
       callback: (response: any) => {
         const paymentResponse: PaymentResponse = {
           status: 'success',
@@ -45,5 +46,8 @@ export const PaystackAdapter: AdapterInterface = {
     });
 
     handler.openIframe();
+  },
+  getInstance: () => {
+    return window.PaystackPop;
   },
 };

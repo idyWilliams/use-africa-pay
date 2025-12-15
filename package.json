@@ -16,5 +16,25 @@
     "turbo": "latest",
     "typescript": "^5.0.0"
   },
+  "keywords": [
+    "react",
+    "react-native",
+    "payment",
+    "gateway",
+    "africa",
+    "paystack",
+    "flutterwave",
+    "monnify",
+    "remita",
+    "fintech",
+    "sdk",
+    "hooks",
+    "typescript"
+  ],
+  "author": {
+    "name": "Idorenyin Williams",
+    "email": "widorenyin0@gmail.com",
+    "url": "https://idorenyinwilliams.com/"
+  },
   "packageManager": "pnpm@9.15.0"
 }

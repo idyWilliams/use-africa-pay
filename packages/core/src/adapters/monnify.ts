@@ -60,4 +60,7 @@ export const MonnifyAdapter: AdapterInterface = {
       },
     });
   },
+  getInstance: () => {
+    return window.MonnifySDK;
+  },
 };

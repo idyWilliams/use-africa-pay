@@ -4,26 +4,63 @@ export type PaymentStatus = 'pending' | 'success' | 'failed' | 'cancelled';
 
 export interface UserConfig {
   email: string;
-  name?: string; // Required by Monnify, Remita
-  phonenumber?: string; // Required by Flutterwave
-  phone?: string; // Alternative for phone number
+  name?: string;
+  phonenumber?: string;
+  phone?: string;
 }
 
+// Base configuration shared by all providers
 export interface BaseConfig {
   amount: number; // In lowest denomination (kobo/cents)
   currency: 'NGN' | 'USD' | 'GHS' | 'KES';
   reference: string;
   publicKey: string;
-  contractCode?: string; // Specific to Monnify
-  merchantId?: string; // Specific to Remita
-  serviceTypeId?: string; // Specific to Remita
+  user: UserConfig;
   metadata?: Record<string, any>;
+  onSuccess?: (response: PaymentResponse) => void;
+  onClose?: () => void;
+  onError?: (error: PaymentError) => void;
+  adapter?: AdapterInterface; // Allow passing adapter instance directly
 }
 
+// Provider-specific configurations
+export interface PaystackConfig extends BaseConfig {
+  provider: 'paystack';
+  channels?: string[]; // Paystack specific
+}
+
+export interface FlutterwaveConfig extends BaseConfig {
+  provider: 'flutterwave';
+  payment_options?: string; // Flutterwave specific
+}
+
+export interface MonnifyConfig extends BaseConfig {
+  provider: 'monnify';
+  contractCode: string;
+  user: UserConfig & { name: string }; // Name is required for Monnify
+}
+
+export interface RemitaConfig extends BaseConfig {
+  provider: 'remita';
+  merchantId: string;
+  serviceTypeId: string;
+  user: UserConfig & { name: string }; // Name is required for Remita
+}
+
+// Discriminated Union for Initialization Props
+export type InitializePaymentProps =
+  | PaystackConfig
+  | FlutterwaveConfig
+  | MonnifyConfig
+  | RemitaConfig;
+
+// Adapter Config (Internal use, normalized)
 export interface AdapterConfig extends BaseConfig {
   user: UserConfig;
+  provider: PaymentProvider;
   onSuccess: (response: PaymentResponse) => void;
   onClose: () => void;
+  [key: string]: any; // Allow extra properties for provider specifics
 }
 
 // Enhanced Payment Response
@@ -51,7 +88,8 @@ export class PaymentError extends Error {
     message: string,
     public code: string,
     public provider?: PaymentProvider,
-    public suggestion?: string
+    public suggestion?: string,
+    public rawError?: any // Keep the original provider response
   ) {
     super(message);
     this.name = 'PaymentError';
@@ -78,8 +116,8 @@ export class NetworkError extends PaymentError {
 }
 
 export class ProviderError extends PaymentError {
-  constructor(message: string, provider: PaymentProvider, suggestion?: string) {
-    super(message, 'PROVIDER_ERROR', provider, suggestion);
+  constructor(message: string, provider: PaymentProvider, suggestion?: string, rawError?: any) {
+    super(message, 'PROVIDER_ERROR', provider, suggestion, rawError);
     this.name = 'ProviderError';
   }
 }
@@ -87,4 +125,5 @@ export class ProviderError extends PaymentError {
 export interface AdapterInterface {
   loadScript: () => Promise<void>;
   initialize: (config: AdapterConfig) => void;
+  getInstance: () => any; // Escape hatch to get underlying provider instance
 }

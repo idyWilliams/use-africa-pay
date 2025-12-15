@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+title: use-africa-pay
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Idorenyin
+    family-names: Williams
+    email: widorenyin0@gmail.com
+    affiliation: Independent
+    # orcid: 'https://orcid.org/...'
+repository-code: 'https://github.com/idyWilliams/use-africa-pay'
+url: 'https://github.com/idyWilliams/use-africa-pay'
+abstract: >-
+  A unified, type-safe React hook for integrating African
+  payment gateways (Paystack, Flutterwave, Monnify, Remita)
+  into your application.
+keywords:
+  - react
+  - payment
+  - africa
+  - fintech
+  - paystack
+  - flutterwave
+  - monnify
+  - remita
+license: MIT
+version: 1.2.0
+date-released: '2025-12-13'

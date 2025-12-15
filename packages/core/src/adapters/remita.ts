@@ -61,4 +61,7 @@ export const RemitaAdapter: AdapterInterface = {
 
     paymentEngine.showPaymentWidget();
   },
+  getInstance: () => {
+    return window.RmPaymentEngine;
+  },
 };

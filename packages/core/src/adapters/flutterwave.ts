@@ -21,7 +21,7 @@ export const FlutterwaveAdapter: AdapterInterface = {
       tx_ref: config.reference,
       amount: config.amount / 100, // Flutterwave expects major denomination (e.g. NGN)
       currency: config.currency,
-      payment_options: 'card,mobilemoney,ussd',
+      payment_options: config.payment_options || 'card,mobilemoney,ussd',
       customer: {
         email: config.user.email,
         phone_number: config.user.phonenumber,
@@ -59,5 +59,8 @@ export const FlutterwaveAdapter: AdapterInterface = {
         logo: config.metadata?.logo,
       },
     });
+  },
+  getInstance: () => {
+    return window.FlutterwaveCheckout;
   },
 };

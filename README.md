@@ -1,7 +1,25 @@
 # use-africa-pay
 
-<img src="./assets/icon.png" alt="use-africa-pay icon" width="120" />
-
+<div align="center">
+  <img src="./assets/icon.png" alt="use-africa-pay icon" width="120" />
+  <h1>use-africa-pay</h1>
+  <p>
+    <b>The Unified Payment SDK for Africa</b><br/>
+    Integrate Paystack, Flutterwave, Monnify, and Remita with a single, type-safe API.
+  </p>
+  <p>
+    <a href="https://www.npmjs.com/package/@use-africa-pay/core">
+      <img src="https://img.shields.io/npm/v/@use-africa-pay/core?style=flat-square" alt="NPM Version" />
+    </a>
+    <a href="https://www.npmjs.com/package/@use-africa-pay/core">
+      <img src="https://img.shields.io/npm/dm/@use-africa-pay/core?style=flat-square" alt="Downloads" />
+    </a>
+    <a href="https://github.com/idyWilliams/use-africa-pay/blob/main/LICENSE">
+      <img src="https://img.shields.io/github/license/idyWilliams/use-africa-pay?style=flat-square" alt="License" />
+    </a>
+  </p>
+  <p>Created and Maintained by <a href="https://idorenyinwilliams.com/"><b>Idorenyin Williams</b></a></p>
+</div>
 
 A unified, type-safe React hook for integrating African payment gateways (Paystack, Flutterwave, Monnify, Remita) into your application.
 
