@@ -2,8 +2,11 @@ import { AdapterInterface, AdapterConfig, PaymentResponse } from '../types';
 import { loadScript } from '../scriptLoader';
 
 declare global {
+  interface RmPaymentEngine {
+    init: (config: any) => { showPaymentWidget: () => void };
+  }
   interface Window {
-    RmPaymentEngine: any;
+    RmPaymentEngine: RmPaymentEngine;
   }
 }
 

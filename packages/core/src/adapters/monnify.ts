@@ -2,8 +2,11 @@ import { AdapterInterface, AdapterConfig, PaymentResponse } from '../types';
 import { loadScript } from '../scriptLoader';
 
 declare global {
+  interface MonnifySDK {
+    initialize: (config: any) => void;
+  }
   interface Window {
-    MonnifySDK: any;
+    MonnifySDK: MonnifySDK;
   }
 }
 

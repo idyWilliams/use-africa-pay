@@ -147,28 +147,33 @@ export const useAfricaPay = () => {
           if (props.onClose) props.onClose();
         },
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       setLoading(false);
 
       let paymentError: PaymentError;
 
       if (err instanceof PaymentError) {
         paymentError = err;
-      } else if (err.message?.includes('Failed to load script') || err.message?.includes('timeout')) {
-        paymentError = new NetworkError(
-          `Failed to load ${provider} payment script`,
-          provider
-        );
       } else {
-        // Redact sensitive data from error messages
-        const safeMessage = redactSensitiveData(err.message || 'Payment initialization failed');
-        paymentError = new PaymentError(
-          safeMessage,
-          'UNKNOWN_ERROR',
-          provider,
-          'Please try again or contact support if the issue persists',
-          err // Pass raw error
-        );
+        const error = err as Error | undefined;
+        const message = error?.message || 'Payment initialization failed';
+
+        if (message.includes('Failed to load script') || message.includes('timeout')) {
+          paymentError = new NetworkError(
+            `Failed to load ${provider} payment script`,
+            provider
+          );
+        } else {
+          // Redact sensitive data from error messages
+          const safeMessage = redactSensitiveData(message);
+          paymentError = new PaymentError(
+            safeMessage,
+            'UNKNOWN_ERROR',
+            provider,
+            'Please try again or contact support if the issue persists',
+            err // Pass raw error
+          );
+        }
       }
 
       setError(paymentError);

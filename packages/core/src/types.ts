@@ -81,7 +81,7 @@ export interface PaymentResponse {
   };
   provider: PaymentProvider;
   metadata?: Record<string, any>;
-  raw: any; // Original provider response
+  raw: unknown; // Original provider response
 }
 
 // Custom Error Types
@@ -91,7 +91,7 @@ export class PaymentError extends Error {
     public code: string,
     public provider?: PaymentProvider,
     public suggestion?: string,
-    public rawError?: any // Keep the original provider response
+    public rawError?: unknown // Keep the original provider response
   ) {
     super(message);
     this.name = 'PaymentError';
@@ -118,7 +118,7 @@ export class NetworkError extends PaymentError {
 }
 
 export class ProviderError extends PaymentError {
-  constructor(message: string, provider: PaymentProvider, suggestion?: string, rawError?: any) {
+  constructor(message: string, provider: PaymentProvider, suggestion?: string, rawError?: unknown) {
     super(message, 'PROVIDER_ERROR', provider, suggestion, rawError);
     this.name = 'ProviderError';
   }

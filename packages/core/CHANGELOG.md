@@ -1,5 +1,16 @@
 # @use-africa-pay/core
 
+## 1.3.0
+
+### Minor Changes
+
+- **Improved Type Safety**: Refined types for external provider SDK globals (`RmPaymentEngine`, `MonnifySDK`, `PaystackPop`, `FlutterwaveCheckout`).
+- **Safer Error Handling**: Updated `useAfricaPay` to use `unknown` in catch blocks with safer error extraction.
+
+### Breaking Changes ⚠️
+
+- **Stricter Raw Responses**: Changed `raw` and `rawError` types from `any` to `unknown` in `PaymentResponse` and `PaymentError`. Consumers must now cast or use type guards to access provider-specific fields.
+
 ## 1.2.1
 
 ### Patch Changes

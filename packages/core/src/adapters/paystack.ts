@@ -2,8 +2,11 @@ import { AdapterInterface, AdapterConfig, PaymentResponse } from '../types';
 import { loadScript } from '../scriptLoader';
 
 declare global {
+  interface PaystackPop {
+    setup: (config: any) => { openIframe: () => void };
+  }
   interface Window {
-    PaystackPop: any;
+    PaystackPop: PaystackPop;
   }
 }
 

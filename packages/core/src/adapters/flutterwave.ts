@@ -3,7 +3,7 @@ import { loadScript } from '../scriptLoader';
 
 declare global {
   interface Window {
-    FlutterwaveCheckout: any;
+    FlutterwaveCheckout: (config: any) => void;
   }
 }
 
