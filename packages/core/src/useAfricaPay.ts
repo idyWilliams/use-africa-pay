@@ -1,3 +1,10 @@
+/**
+ * @packageDocumentation
+ * @module @use-africa-pay/core
+ * 
+ * Main React hook for integrating African payment gateways.
+ */
+
 import { useState, useRef } from 'react';
 import {
   InitializePaymentProps,
@@ -16,16 +23,107 @@ import {
   redactSensitiveData,
 } from './utils/sanitize';
 
-export const useAfricaPay = () => {
+/**
+ * Return type for the useAfricaPay hook.
+ * 
+ * @category Hooks
+ */
+export interface UseAfricaPayReturn {
+  /** Initializes a payment transaction */
+  initializePayment: (props: InitializePaymentProps) => Promise<void>;
+  /** Whether a payment is currently being processed */
+  loading: boolean;
+  /** The last error that occurred, if any */
+  error: PaymentError | null;
+  /** Resets the hook state (loading and error) */
+  reset: () => void;
+  /** Returns the underlying provider SDK instance */
+  getProviderInstance: () => any;
+}
+
+/**
+ * React hook for integrating African payment gateways.
+ * 
+ * Provides a unified interface for Paystack, Flutterwave, Monnify, and Remita
+ * payment integrations with automatic input sanitization and error handling.
+ * 
+ * @category Hooks
+ * @returns Hook state and methods for payment processing
+ * 
+ * @example
+ * Basic usage with Paystack:
+ * ```tsx
+ * import { useAfricaPay, PaystackAdapter } from '@use-africa-pay/core';
+ * 
+ * function PaymentButton() {
+ *   const { initializePayment, loading, error } = useAfricaPay();
+ * 
+ *   const handlePayment = () => {
+ *     initializePayment({
+ *       provider: 'paystack',
+ *       adapter: PaystackAdapter,
+ *       publicKey: 'pk_test_xxx',
+ *       amount: 100000, // 1000 NGN in kobo
+ *       currency: 'NGN',
+ *       reference: `TXN_${Date.now()}`,
+ *       user: {
+ *         email: 'customer@example.com',
+ *         name: 'John Doe'
+ *       },
+ *       onSuccess: (response) => {
+ *         console.log('Payment successful:', response);
+ *       },
+ *       onClose: () => {
+ *         console.log('Payment modal closed');
+ *       }
+ *     });
+ *   };
+ * 
+ *   return (
+ *     <button onClick={handlePayment} disabled={loading}>
+ *       {loading ? 'Processing...' : 'Pay Now'}
+ *     </button>
+ *   );
+ * }
+ * ```
+ * 
+ * @example
+ * Using with Monnify:
+ * ```tsx
+ * initializePayment({
+ *   provider: 'monnify',
+ *   adapter: MonnifyAdapter,
+ *   publicKey: 'MK_TEST_xxx',
+ *   contractCode: 'CONTRACT_CODE',
+ *   amount: 100000,
+ *   currency: 'NGN',
+ *   reference: `TXN_${Date.now()}`,
+ *   user: {
+ *     email: 'customer@example.com',
+ *     name: 'John Doe' // Required for Monnify
+ *   },
+ *   onSuccess: (response) => console.log(response)
+ * });
+ * ```
+ */
+export const useAfricaPay = (): UseAfricaPayReturn => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<PaymentError | null>(null);
   const adapterRef = useRef<AdapterInterface | null>(null);
 
+  /**
+   * Resets the hook state to initial values.
+   */
   const reset = () => {
     setLoading(false);
     setError(null);
   };
 
+  /**
+   * Validates the payment configuration.
+   * @param props - Payment configuration to validate
+   * @throws {ValidationError} When configuration is invalid
+   */
   const validateConfig = (props: InitializePaymentProps): void => {
     const { provider, user, amount, publicKey } = props;
 
@@ -89,6 +187,12 @@ export const useAfricaPay = () => {
     }
   };
 
+  /**
+   * Initializes a payment transaction with the specified provider.
+   * 
+   * @param props - Payment configuration including provider, amount, and callbacks
+   * @returns Promise that resolves when payment is initialized
+   */
   const initializePayment = async (props: InitializePaymentProps) => {
     setLoading(true);
     setError(null);
@@ -189,6 +293,12 @@ export const useAfricaPay = () => {
     }
   };
 
+  /**
+   * Returns the underlying payment provider SDK instance.
+   * Useful for advanced customization or debugging.
+   * 
+   * @returns The provider SDK instance or undefined if not initialized
+   */
   const getProviderInstance = () => {
     return adapterRef.current?.getInstance();
   };

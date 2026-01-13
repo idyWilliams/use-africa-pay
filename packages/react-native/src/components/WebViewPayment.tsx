@@ -1,15 +1,70 @@
+/**
+ * @packageDocumentation
+ * @module @use-africa-pay/react-native
+ * 
+ * WebView-based payment component for Monnify and Remita.
+ */
+
 import React, { useRef, useState } from 'react';
 import { Modal, View, ActivityIndicator, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { PaymentConfig, PaymentResponse } from '../types';
 
+/**
+ * Props for the WebViewPayment component.
+ * 
+ * @category Components
+ */
 interface WebViewPaymentProps {
+  /** Payment configuration */
   config: PaymentConfig;
+  /** Payment provider (monnify or remita) */
   provider: 'monnify' | 'remita';
+  /** Whether the payment modal is visible */
   visible: boolean;
+  /** Callback to dismiss the payment modal */
   onDismiss: () => void;
 }
 
+/**
+ * WebView-based payment component for Monnify and Remita.
+ * 
+ * This component renders a WebView that loads the payment provider's
+ * JavaScript SDK and handles the payment flow. It's used for providers
+ * that don't have native React Native SDKs.
+ * 
+ * @category Components
+ * @param props - Component props
+ * @returns WebView payment modal
+ * 
+ * @example
+ * ```tsx
+ * import { WebViewPayment } from '@use-africa-pay/react-native';
+ * 
+ * function MonnifyPayment() {
+ *   const [visible, setVisible] = useState(true);
+ *   const config = {
+ *     publicKey: 'MK_TEST_xxx',
+ *     contractCode: 'CONTRACT_CODE',
+ *     amount: 100000,
+ *     currency: 'NGN',
+ *     reference: `TXN_${Date.now()}`,
+ *     user: { email: 'customer@example.com', name: 'John Doe' },
+ *     onSuccess: (response) => console.log(response),
+ *     onClose: () => setVisible(false)
+ *   };
+ * 
+ *   return (
+ *     <WebViewPayment
+ *       config={config}
+ *       provider="monnify"
+ *       visible={visible}
+ *       onDismiss={() => setVisible(false)}
+ *     />
+ *   );
+ * }
+ * ```
+ */
 export const WebViewPayment: React.FC<WebViewPaymentProps> = ({
   config,
   provider,
@@ -19,7 +74,10 @@ export const WebViewPayment: React.FC<WebViewPaymentProps> = ({
   const [loading, setLoading] = useState(true);
   const webViewRef = useRef<WebView>(null);
 
-  // Generate HTML for payment
+  /**
+   * Generates the HTML content for the payment WebView.
+   * Includes the provider's SDK and initialization code.
+   */
   const generatePaymentHTML = (): string => {
     if (provider === 'monnify') {
       return `
@@ -114,6 +172,10 @@ export const WebViewPayment: React.FC<WebViewPaymentProps> = ({
     }
   };
 
+  /**
+   * Handles messages from the WebView.
+   * Parses the message and triggers appropriate callbacks.
+   */
   const handleMessage = (event: any) => {
     try {
       const message = JSON.parse(event.nativeEvent.data);

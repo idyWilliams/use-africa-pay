@@ -8,12 +8,15 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "pnpm build && changeset publish"
+    "release": "pnpm build && changeset publish",
+    "docs": "typedoc",
+    "docs:watch": "typedoc --watch"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
     "prettier": "latest",
     "turbo": "latest",
+    "typedoc": "^0.28.0",
     "typescript": "^5.0.0"
   },
   "keywords": [

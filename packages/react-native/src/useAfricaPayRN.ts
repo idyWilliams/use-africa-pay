@@ -1,3 +1,10 @@
+/**
+ * @packageDocumentation
+ * @module @use-africa-pay/react-native
+ * 
+ * React Native hook for integrating African payment gateways.
+ */
+
 import { useState, useCallback } from 'react';
 import {
   PaymentProvider,
@@ -7,29 +14,109 @@ import {
   ValidationError,
 } from './types';
 
+/**
+ * Props for initializing a payment transaction.
+ * 
+ * @category Hooks
+ */
 interface InitializePaymentProps extends Omit<PaymentConfig, 'onSuccess' | 'onClose' | 'onError'> {
+  /** Payment provider to use */
   provider: PaymentProvider;
+  /** Callback fired on successful payment */
   onSuccess?: (response: PaymentResponse) => void;
+  /** Callback fired when payment modal is closed */
   onClose?: () => void;
+  /** Callback fired on payment error */
   onError?: (error: PaymentError) => void;
 }
 
+/**
+ * Return type for the useAfricaPayRN hook.
+ * 
+ * @category Hooks
+ */
 interface UseAfricaPayRNReturn {
+  /** Initializes a payment transaction */
   initializePayment: (props: InitializePaymentProps) => void;
+  /** Whether a payment is currently being processed */
   loading: boolean;
+  /** The last error that occurred, if any */
   error: PaymentError | null;
+  /** Resets the hook state */
   reset: () => void;
+  /** Current payment configuration (for rendering payment components) */
   paymentConfig: PaymentConfig | null;
+  /** Whether the payment modal should be shown */
   showPayment: boolean;
+  /** Hides the payment modal */
   hidePayment: () => void;
 }
 
+/**
+ * React Native hook for integrating African payment gateways.
+ * 
+ * Provides a unified interface for Paystack, Flutterwave, Monnify, and Remita
+ * payment integrations in React Native applications.
+ * 
+ * @category Hooks
+ * @returns Hook state and methods for payment processing
+ * 
+ * @example
+ * ```tsx
+ * import { useAfricaPayRN, PaymentGateway } from '@use-africa-pay/react-native';
+ * 
+ * function PaymentScreen() {
+ *   const {
+ *     initializePayment,
+ *     loading,
+ *     error,
+ *     paymentConfig,
+ *     showPayment,
+ *     hidePayment
+ *   } = useAfricaPayRN();
+ * 
+ *   const handlePayment = () => {
+ *     initializePayment({
+ *       provider: 'paystack',
+ *       publicKey: 'pk_test_xxx',
+ *       amount: 100000, // 1000 NGN in kobo
+ *       currency: 'NGN',
+ *       reference: `TXN_${Date.now()}`,
+ *       user: { email: 'customer@example.com' },
+ *       onSuccess: (response) => {
+ *         console.log('Payment successful:', response);
+ *       },
+ *       onClose: () => {
+ *         console.log('Payment modal closed');
+ *       }
+ *     });
+ *   };
+ * 
+ *   return (
+ *     <View>
+ *       <Button title="Pay Now" onPress={handlePayment} disabled={loading} />
+ *       {paymentConfig && (
+ *         <PaymentGateway
+ *           config={paymentConfig}
+ *           provider="paystack"
+ *           visible={showPayment}
+ *           onDismiss={hidePayment}
+ *         />
+ *       )}
+ *     </View>
+ *   );
+ * }
+ * ```
+ */
 export const useAfricaPayRN = (): UseAfricaPayRNReturn => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<PaymentError | null>(null);
   const [paymentConfig, setPaymentConfig] = useState<PaymentConfig | null>(null);
   const [showPayment, setShowPayment] = useState(false);
 
+  /**
+   * Resets the hook state to initial values.
+   */
   const reset = useCallback(() => {
     setLoading(false);
     setError(null);
@@ -37,11 +124,19 @@ export const useAfricaPayRN = (): UseAfricaPayRNReturn => {
     setShowPayment(false);
   }, []);
 
+  /**
+   * Hides the payment modal.
+   */
   const hidePayment = useCallback(() => {
     setShowPayment(false);
     setLoading(false);
   }, []);
 
+  /**
+   * Validates the payment configuration.
+   * @param props - Payment configuration to validate
+   * @throws {ValidationError} When configuration is invalid
+   */
   const validateConfig = (props: InitializePaymentProps): void => {
     const { provider, user, amount, publicKey, contractCode, merchantId, serviceTypeId } = props;
 
@@ -105,6 +200,11 @@ export const useAfricaPayRN = (): UseAfricaPayRNReturn => {
     }
   };
 
+  /**
+   * Initializes a payment transaction with the specified provider.
+   * 
+   * @param props - Payment configuration including provider, amount, and callbacks
+   */
   const initializePayment = useCallback((props: InitializePaymentProps) => {
     setLoading(true);
     setError(null);

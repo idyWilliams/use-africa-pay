@@ -1,9 +1,25 @@
 /**
- * Input sanitization utilities to prevent XSS and injection attacks
+ * @packageDocumentation
+ * @module @use-africa-pay/core
+ * 
+ * Input sanitization utilities to prevent XSS and injection attacks.
+ * These functions are used internally to sanitize user input before
+ * sending to payment providers.
  */
 
 /**
- * Sanitize email address
+ * Sanitizes an email address by removing HTML tags and validating format.
+ * 
+ * @category Utilities
+ * @param email - The email address to sanitize
+ * @returns The sanitized email address in lowercase
+ * @throws Error if the email format is invalid
+ * 
+ * @example
+ * ```typescript
+ * const email = sanitizeEmail('  User@Example.COM  ');
+ * // Returns: 'user@example.com'
+ * ```
  */
 export const sanitizeEmail = (email: string): string => {
   if (!email) return '';
@@ -21,7 +37,21 @@ export const sanitizeEmail = (email: string): string => {
 };
 
 /**
- * Sanitize name (remove special characters that could be used for XSS)
+ * Sanitizes a name by removing HTML tags and potentially dangerous characters.
+ * Preserves international characters (Unicode letters).
+ * 
+ * @category Utilities
+ * @param name - The name to sanitize
+ * @returns The sanitized name
+ * 
+ * @example
+ * ```typescript
+ * const name = sanitizeName('<script>alert("xss")</script>John Doe');
+ * // Returns: 'John Doe'
+ * 
+ * const intlName = sanitizeName('José García');
+ * // Returns: 'José García' (international characters preserved)
+ * ```
  */
 export const sanitizeName = (name: string): string => {
   if (!name) return '';
@@ -37,7 +67,21 @@ export const sanitizeName = (name: string): string => {
 };
 
 /**
- * Sanitize phone number
+ * Sanitizes a phone number by removing invalid characters.
+ * Allows digits, plus sign, hyphens, parentheses, and spaces.
+ * 
+ * @category Utilities
+ * @param phone - The phone number to sanitize
+ * @returns The sanitized phone number
+ * 
+ * @example
+ * ```typescript
+ * const phone = sanitizePhone('+234 (801) 234-5678');
+ * // Returns: '+234 (801) 234-5678'
+ * 
+ * const dirtyPhone = sanitizePhone('<script>+2348012345678</script>');
+ * // Returns: '+2348012345678'
+ * ```
  */
 export const sanitizePhone = (phone: string): string => {
   if (!phone) return '';
@@ -49,8 +93,22 @@ export const sanitizePhone = (phone: string): string => {
 };
 
 /**
- * Sanitize transaction reference
- * Only allow alphanumeric characters, hyphens, and underscores
+ * Sanitizes a transaction reference.
+ * Only allows alphanumeric characters, hyphens, and underscores.
+ * 
+ * @category Utilities
+ * @param reference - The transaction reference to sanitize
+ * @returns The sanitized reference
+ * @throws Error if reference is empty or contains no valid characters
+ * 
+ * @example
+ * ```typescript
+ * const ref = sanitizeReference('TXN_123-ABC');
+ * // Returns: 'TXN_123-ABC'
+ * 
+ * const dirtyRef = sanitizeReference('TXN<script>123');
+ * // Returns: 'TXN123'
+ * ```
  */
 export const sanitizeReference = (reference: string): string => {
   if (!reference) {
@@ -68,8 +126,24 @@ export const sanitizeReference = (reference: string): string => {
 };
 
 /**
- * Sanitize metadata object
- * Recursively sanitize all string values to prevent XSS
+ * Recursively sanitizes a metadata object to prevent XSS attacks.
+ * Removes HTML tags and script content from all string values.
+ * 
+ * @category Utilities
+ * @param metadata - The metadata object to sanitize
+ * @returns The sanitized metadata object
+ * 
+ * @example
+ * ```typescript
+ * const meta = sanitizeMetadata({
+ *   title: '<script>alert("xss")</script>My Store',
+ *   description: 'Order #123',
+ *   nested: {
+ *     value: '<img onerror="alert(1)" src="x">'
+ *   }
+ * });
+ * // Returns: { title: 'My Store', description: 'Order #123', nested: { value: '' } }
+ * ```
  */
 export const sanitizeMetadata = (metadata: Record<string, any>): Record<string, any> => {
   if (!metadata || typeof metadata !== 'object') {
@@ -101,7 +175,21 @@ export const sanitizeMetadata = (metadata: Record<string, any>): Record<string, 
 };
 
 /**
- * Redact sensitive information from error messages
+ * Redacts sensitive information from error messages for safe logging.
+ * Masks API keys, email addresses, and phone numbers.
+ * 
+ * @category Utilities
+ * @param message - The message to redact
+ * @returns The message with sensitive data redacted
+ * 
+ * @example
+ * ```typescript
+ * const safe = redactSensitiveData('Error with key pk_test_abcdefghijklmnopqrstuvwxyz');
+ * // Returns: 'Error with key ***wxyz'
+ * 
+ * const safeEmail = redactSensitiveData('User user@example.com not found');
+ * // Returns: 'User ***@***.*** not found'
+ * ```
  */
 export const redactSensitiveData = (message: string): string => {
   if (!message) return '';

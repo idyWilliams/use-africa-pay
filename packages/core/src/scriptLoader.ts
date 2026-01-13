@@ -1,23 +1,79 @@
-const LOADED_SCRIPTS: Record<string, Promise<void>> = {};
-const SCRIPT_TIMEOUT = 30000; // 30 seconds
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 1000; // 1 second
+/**
+ * @packageDocumentation
+ * @module @use-africa-pay/core
+ * 
+ * Script loading utilities for dynamically loading payment provider SDKs.
+ */
 
+/** Cache of loaded script promises to prevent duplicate loading */
+const LOADED_SCRIPTS: Record<string, Promise<void>> = {};
+
+/** Default timeout for script loading (30 seconds) */
+const SCRIPT_TIMEOUT = 30000;
+
+/** Maximum number of retry attempts */
+const MAX_RETRIES = 3;
+
+/** Base delay between retries (1 second) */
+const RETRY_DELAY = 1000;
+
+/**
+ * Options for script loading.
+ * 
+ * @category Utilities
+ */
 interface ScriptLoadOptions {
-  nonce?: string; // CSP nonce
+  /** CSP nonce for script tag */
+  nonce?: string;
+  /** Timeout in milliseconds */
   timeout?: number;
+  /** Number of retry attempts */
   retries?: number;
 }
 
 /**
- * Wait for a specified duration
+ * Creates a promise that resolves after a specified duration.
+ * 
+ * @param ms - Duration in milliseconds
+ * @returns Promise that resolves after the delay
+ * @internal
  */
 const delay = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
 /**
- * Load external script with timeout, retry logic, and CSP support
+ * Dynamically loads an external JavaScript file with timeout, retry logic, and CSP support.
+ * 
+ * Features:
+ * - Automatic caching to prevent duplicate loads
+ * - Configurable timeout (default: 30 seconds)
+ * - Exponential backoff retry logic (default: 3 attempts)
+ * - CSP nonce support for Content Security Policy compliance
+ * - HTTPS enforcement for security
+ * 
+ * @category Utilities
+ * @param src - URL of the script to load (must be HTTPS)
+ * @param options - Loading options
+ * @returns Promise that resolves when the script is loaded
+ * @throws Error if the script fails to load after all retries
+ * 
+ * @example
+ * Basic usage:
+ * ```typescript
+ * await loadScript('https://js.paystack.co/v1/inline.js');
+ * // Script is now loaded and available
+ * ```
+ * 
+ * @example
+ * With options:
+ * ```typescript
+ * await loadScript('https://sdk.monnify.com/plugin/monnify.js', {
+ *   timeout: 15000,
+ *   retries: 5,
+ *   nonce: 'abc123' // For CSP compliance
+ * });
+ * ```
  */
 export const loadScript = (
   src: string,
@@ -102,7 +158,16 @@ export const loadScript = (
 };
 
 /**
- * Clear loaded scripts cache (useful for testing)
+ * Clears the loaded scripts cache.
+ * Useful for testing or when you need to force reload scripts.
+ * 
+ * @category Utilities
+ * @example
+ * ```typescript
+ * // Clear cache before reloading
+ * clearScriptCache();
+ * await loadScript('https://js.paystack.co/v1/inline.js');
+ * ```
  */
 export const clearScriptCache = (): void => {
   Object.keys(LOADED_SCRIPTS).forEach((key) => delete LOADED_SCRIPTS[key]);

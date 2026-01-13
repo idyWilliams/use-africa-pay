@@ -1,3 +1,10 @@
+/**
+ * @packageDocumentation
+ * @module @use-africa-pay/core
+ * 
+ * Flutterwave payment adapter for web applications.
+ */
+
 import { AdapterInterface, AdapterConfig, PaymentResponse } from '../types';
 import { loadScript } from '../scriptLoader';
 
@@ -7,11 +14,71 @@ declare global {
   }
 }
 
+/**
+ * Flutterwave payment adapter for web applications.
+ * 
+ * Integrates with Flutterwave's checkout JavaScript SDK to provide
+ * payment processing across multiple African countries including
+ * Nigeria, Ghana, Kenya, South Africa, and more.
+ * 
+ * @category Adapters
+ * @see {@link https://developer.flutterwave.com/docs/collecting-payments/inline | Flutterwave Documentation}
+ * 
+ * @example
+ * ```tsx
+ * import { useAfricaPay, FlutterwaveAdapter } from '@use-africa-pay/core';
+ * 
+ * function PaymentButton() {
+ *   const { initializePayment, loading } = useAfricaPay();
+ * 
+ *   const handlePayment = () => {
+ *     initializePayment({
+ *       provider: 'flutterwave',
+ *       adapter: FlutterwaveAdapter,
+ *       publicKey: 'FLWPUBK_TEST-xxx',
+ *       amount: 100000, // 1000 NGN in kobo
+ *       currency: 'NGN',
+ *       reference: `TXN_${Date.now()}`,
+ *       user: {
+ *         email: 'customer@example.com',
+ *         name: 'John Doe',
+ *         phonenumber: '+2348012345678' // Required for Flutterwave
+ *       },
+ *       payment_options: 'card,mobilemoney,ussd',
+ *       metadata: {
+ *         title: 'My Store',
+ *         description: 'Payment for order #123',
+ *         logo: 'https://example.com/logo.png'
+ *       },
+ *       onSuccess: (response) => console.log('Success:', response),
+ *       onClose: () => console.log('Closed')
+ *     });
+ *   };
+ * 
+ *   return <button onClick={handlePayment}>Pay with Flutterwave</button>;
+ * }
+ * ```
+ */
 export const FlutterwaveAdapter: AdapterInterface = {
+  /**
+   * Loads the Flutterwave checkout JavaScript SDK.
+   * The same URL is used for both test and live environments.
+   * 
+   * @returns Promise that resolves when the SDK is loaded
+   */
   loadScript: async () => {
     // Flutterwave uses the same URL for test and live
     await loadScript('https://checkout.flutterwave.com/v3.js');
   },
+
+  /**
+   * Initializes the Flutterwave checkout modal.
+   * 
+   * Note: Flutterwave expects the amount in major currency units (e.g., NGN),
+   * so the adapter automatically converts from kobo by dividing by 100.
+   * 
+   * @param config - Payment configuration
+   */
   initialize: (config: AdapterConfig) => {
     if (!config.user.phonenumber) {
       console.warn('Flutterwave requires a phone number for some payment methods.');
@@ -61,6 +128,12 @@ export const FlutterwaveAdapter: AdapterInterface = {
       },
     });
   },
+
+  /**
+   * Returns the FlutterwaveCheckout function.
+   * 
+   * @returns The FlutterwaveCheckout global function
+   */
   getInstance: () => {
     return window.FlutterwaveCheckout;
   },

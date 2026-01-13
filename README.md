@@ -206,6 +206,22 @@ initializePayment({
 });
 ```
 
+## Documentation
+
+Full API documentation is available at [https://idywilliams.github.io/use-africa-pay/](https://idywilliams.github.io/use-africa-pay/)
+
+The documentation is generated from JSDoc comments using TypeDoc and includes:
+- Complete API reference for all types, interfaces, and functions
+- Code examples for each provider
+- Error handling guides
+- Security best practices
+
+To generate documentation locally:
+
+```bash
+pnpm docs
+```
+
 ## API Reference
 
 ### `useAfricaPay()`

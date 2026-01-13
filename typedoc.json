@@ -1,0 +1,38 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "packages/core/src/index.ts",
+    "packages/react-native/src/index.tsx"
+  ],
+  "entryPointStrategy": "expand",
+  "out": "docs",
+  "name": "use-africa-pay",
+  "readme": "README.md",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeInternal": true,
+  "excludeExternals": true,
+  "skipErrorChecking": true,
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true
+  },
+  "categorizeByGroup": true,
+  "categoryOrder": [
+    "Hooks",
+    "Types",
+    "Adapters",
+    "Components",
+    "Errors",
+    "Utilities",
+    "*"
+  ],
+  "sort": ["source-order", "alphabetical"],
+  "visibilityFilters": {
+    "protected": false,
+    "private": false,
+    "inherited": true,
+    "external": false
+  }
+}
