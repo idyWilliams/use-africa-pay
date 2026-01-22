@@ -1,5 +1,6 @@
-import { AdapterInterface, AdapterConfig, PaymentResponse } from '../types';
-import { loadScript } from '../scriptLoader';
+import { AdapterInterface, AdapterConfig, PaymentResponse } from "../types";
+import { loadScript } from "../scriptLoader";
+import { parseUserName } from "../utils/sanitize";
 
 declare global {
   interface Window {
@@ -12,17 +13,18 @@ export const RemitaAdapter: AdapterInterface = {
     // Default to Test Mode (Demo) if not specified, for safety
     const isTestMode = options.testMode !== false;
     const url = isTestMode
-      ? 'https://remitademo.net/payment/v1/remita-pay-inline.bundle.js'
-      : 'https://login.remita.net/payment/v1/remita-pay-inline.bundle.js';
+      ? "https://remitademo.net/payment/v1/remita-pay-inline.bundle.js"
+      : "https://login.remita.net/payment/v1/remita-pay-inline.bundle.js";
     await loadScript(url);
   },
   initialize: (config: AdapterConfig) => {
     if (!config.merchantId) {
-      throw new Error('Merchant ID is required for Remita');
+      throw new Error("Merchant ID is required for Remita");
     }
     if (!config.serviceTypeId) {
-      throw new Error('Service Type ID is required for Remita');
+      throw new Error("Service Type ID is required for Remita");
     }
+    const { firstName, lastName } = parseUserName(config.user);
 
     const paymentEngine = window.RmPaymentEngine.init({
       key: config.publicKey,
@@ -32,14 +34,14 @@ export const RemitaAdapter: AdapterInterface = {
       currency: config.currency,
       transactionId: config.reference,
       customerId: config.user.email,
-      firstName: config.user.name?.split(' ')[0] || '',
-      lastName: config.user.name?.split(' ').slice(1).join(' ') || '',
+      firstName,
+      lastName,
       email: config.user.email,
-      narration: config.metadata?.description || 'Payment',
+      narration: config.metadata?.description || "Payment",
       onSuccess: (response: any) => {
         const paymentResponse: PaymentResponse = {
-          status: 'success',
-          message: 'Payment completed successfully',
+          status: "success",
+          message: "Payment completed successfully",
           reference: config.reference,
           transactionId: response.transactionId || response.RRR,
           amount: config.amount,
@@ -50,14 +52,14 @@ export const RemitaAdapter: AdapterInterface = {
             name: config.user.name,
             phone: config.user.phonenumber || config.user.phone,
           },
-          provider: 'remita',
+          provider: "remita",
           metadata: config.metadata,
           raw: response,
         };
         config.onSuccess(paymentResponse);
       },
       onError: (response: any) => {
-        console.error('Remita payment error:', response);
+        console.error("Remita payment error:", response);
       },
       onClose: () => {
         config.onClose();

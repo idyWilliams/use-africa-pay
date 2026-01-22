@@ -1,10 +1,12 @@
-export type PaymentProvider = 'paystack' | 'flutterwave' | 'monnify' | 'remita';
+export type PaymentProvider = "paystack" | "flutterwave" | "monnify" | "remita";
 
-export type PaymentStatus = 'pending' | 'success' | 'failed' | 'cancelled';
+export type PaymentStatus = "pending" | "success" | "failed" | "cancelled";
 
 export interface UserConfig {
   email: string;
   name?: string;
+  firstName?: string;
+  lastName?: string;
   phonenumber?: string;
   phone?: string;
 }
@@ -12,7 +14,7 @@ export interface UserConfig {
 // Base configuration shared by all providers
 export interface BaseConfig {
   amount: number; // In lowest denomination (kobo/cents)
-  currency: 'NGN' | 'USD' | 'GHS' | 'KES';
+  currency: "NGN" | "USD" | "GHS" | "KES";
   reference: string;
   publicKey: string;
   user: UserConfig;
@@ -27,23 +29,23 @@ export interface BaseConfig {
 
 // Provider-specific configurations
 export interface PaystackConfig extends BaseConfig {
-  provider: 'paystack';
+  provider: "paystack";
   channels?: string[]; // Paystack specific
 }
 
 export interface FlutterwaveConfig extends BaseConfig {
-  provider: 'flutterwave';
+  provider: "flutterwave";
   payment_options?: string; // Flutterwave specific
 }
 
 export interface MonnifyConfig extends BaseConfig {
-  provider: 'monnify';
+  provider: "monnify";
   contractCode: string;
   user: UserConfig & { name: string }; // Name is required for Monnify
 }
 
 export interface RemitaConfig extends BaseConfig {
-  provider: 'remita';
+  provider: "remita";
   merchantId: string;
   serviceTypeId: string;
   user: UserConfig & { name: string }; // Name is required for Remita
@@ -94,14 +96,14 @@ export class PaymentError extends Error {
     public rawError?: any // Keep the original provider response
   ) {
     super(message);
-    this.name = 'PaymentError';
+    this.name = "PaymentError";
   }
 }
 
 export class ValidationError extends PaymentError {
   constructor(message: string, suggestion?: string) {
-    super(message, 'VALIDATION_ERROR', undefined, suggestion);
-    this.name = 'ValidationError';
+    super(message, "VALIDATION_ERROR", undefined, suggestion);
+    this.name = "ValidationError";
   }
 }
 
@@ -109,18 +111,23 @@ export class NetworkError extends PaymentError {
   constructor(message: string, provider?: PaymentProvider) {
     super(
       message,
-      'NETWORK_ERROR',
+      "NETWORK_ERROR",
       provider,
-      'Check your internet connection and try again.'
+      "Check your internet connection and try again."
     );
-    this.name = 'NetworkError';
+    this.name = "NetworkError";
   }
 }
 
 export class ProviderError extends PaymentError {
-  constructor(message: string, provider: PaymentProvider, suggestion?: string, rawError?: any) {
-    super(message, 'PROVIDER_ERROR', provider, suggestion, rawError);
-    this.name = 'ProviderError';
+  constructor(
+    message: string,
+    provider: PaymentProvider,
+    suggestion?: string,
+    rawError?: any
+  ) {
+    super(message, "PROVIDER_ERROR", provider, suggestion, rawError);
+    this.name = "ProviderError";
   }
 }
 
