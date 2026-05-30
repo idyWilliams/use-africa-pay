@@ -176,13 +176,15 @@ initializePayment({
   reference: 'RMT_' + Date.now(),
   user: {
     email: 'customer@example.com',
-    name: 'John Doe', // Required for Remita
+    name: 'John Doe', // Or use firstName/lastName directly
   },
   onSuccess: (response) => {
     console.log('Remita RRR:', response.transactionId);
   },
 });
 ```
+
+**Name handling:** Remita requires both `firstName` and `lastName`. You can provide `name` (auto-parsed) or explicit `firstName`/`lastName`. Titles like "Mr.", "Dr.", "Chief" are automatically stripped.
 
 ### Monnify
 
