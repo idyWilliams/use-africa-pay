@@ -146,6 +146,11 @@ export const useAfricaPay = () => {
           setLoading(false);
           if (props.onClose) props.onClose();
         },
+        onError: (err) => {
+          setLoading(false);
+          setError(err);
+          if (props.onError) props.onError(err);
+        },
       });
     } catch (err: unknown) {
       setLoading(false);

@@ -1,5 +1,11 @@
 # @use-africa-pay/core
 
+## 1.3.2
+
+### Patch Changes
+
+- fix(core): add missing error handling in Monnify, Flutterwave, and Remita adapters. This ensures that the `onError` callback is correctly called when a payment fails, preventing the UI from getting stuck in a loading state.
+
 ## 1.3.1
 
 ### Patch Changes

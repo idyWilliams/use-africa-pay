@@ -1,4 +1,4 @@
-import { AdapterInterface, AdapterConfig, PaymentResponse } from "../types";
+import { AdapterInterface, AdapterConfig, PaymentResponse, PaymentError } from "../types";
 import { loadScript } from "../scriptLoader";
 import { parseUserName } from "../utils/sanitize";
 
@@ -62,7 +62,14 @@ export const RemitaAdapter: AdapterInterface = {
         config.onSuccess(paymentResponse);
       },
       onError: (response: any) => {
-        console.error("Remita payment error:", response);
+        const error = new PaymentError(
+          'Payment failed',
+          'PAYMENT_FAILED',
+          'remita',
+          'The payment was not successful. Please try again.',
+          response
+        );
+        if (config.onError) config.onError(error);
       },
       onClose: () => {
         config.onClose();

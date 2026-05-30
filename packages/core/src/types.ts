@@ -64,6 +64,7 @@ export interface AdapterConfig extends BaseConfig {
   provider: PaymentProvider;
   onSuccess: (response: PaymentResponse) => void;
   onClose: () => void;
+  onError?: (error: PaymentError) => void;
   [key: string]: any; // Allow extra properties for provider specifics
 }
 

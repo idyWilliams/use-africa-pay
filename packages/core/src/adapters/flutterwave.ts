@@ -1,4 +1,4 @@
-import { AdapterInterface, AdapterConfig, PaymentResponse } from '../types';
+import { AdapterInterface, AdapterConfig, PaymentResponse, PaymentError } from '../types';
 import { loadScript } from '../scriptLoader';
 
 declare global {
@@ -49,6 +49,15 @@ export const FlutterwaveAdapter: AdapterInterface = {
             raw: response,
           };
           config.onSuccess(paymentResponse);
+        } else {
+          const error = new PaymentError(
+            'Payment failed',
+            'PAYMENT_FAILED',
+            'flutterwave',
+            'The payment was not successful. Please try again.',
+            response
+          );
+          if (config.onError) config.onError(error);
         }
       },
       onclose: () => {
