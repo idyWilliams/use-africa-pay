@@ -1,4 +1,11 @@
-const LOADED_SCRIPTS: Record<string, Promise<void>> = {};
+type ScriptStatus = 'loading' | 'loaded' | 'failed';
+
+interface ScriptEntry {
+  promise: Promise<void>;
+  status: ScriptStatus;
+}
+
+const LOADED_SCRIPTS: Record<string, ScriptEntry> = {};
 const SCRIPT_TIMEOUT = 30000; // 30 seconds
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // 1 second
@@ -33,9 +40,10 @@ export const loadScript = (
     return Promise.reject(new Error('Script must be loaded over HTTPS'));
   }
 
-  // Return existing promise if script is already loading/loaded
-  if (LOADED_SCRIPTS[src] !== undefined) {
-    return LOADED_SCRIPTS[src];
+  // Return existing promise if script is already loading or successfully loaded
+  const existingEntry = LOADED_SCRIPTS[src];
+  if (existingEntry && existingEntry.status !== 'failed') {
+    return existingEntry.promise;
   }
 
   const timeout = options.timeout || SCRIPT_TIMEOUT;
@@ -45,6 +53,7 @@ export const loadScript = (
     return new Promise((resolve, reject) => {
       // Check if script already exists in DOM
       if (document.querySelector(`script[src="${src}"]`)) {
+        if (LOADED_SCRIPTS[src]) LOADED_SCRIPTS[src].status = 'loaded';
         resolve();
         return;
       }
@@ -66,6 +75,7 @@ export const loadScript = (
 
       script.onload = () => {
         clearTimeout(timeoutId);
+        if (LOADED_SCRIPTS[src]) LOADED_SCRIPTS[src].status = 'loaded';
         resolve();
       };
 
@@ -87,6 +97,7 @@ export const loadScript = (
             reject(err);
           }
         } else {
+          if (LOADED_SCRIPTS[src]) LOADED_SCRIPTS[src].status = 'failed';
           reject(new Error(`Failed to load script after ${maxRetries} attempts: ${src}`));
         }
       };
@@ -95,10 +106,14 @@ export const loadScript = (
     });
   };
 
-  // Store the promise
-  LOADED_SCRIPTS[src] = loadWithRetry();
+  // Store the promise and status
+  const promise = loadWithRetry();
+  LOADED_SCRIPTS[src] = {
+    promise,
+    status: 'loading',
+  };
 
-  return LOADED_SCRIPTS[src];
+  return promise;
 };
 
 /**

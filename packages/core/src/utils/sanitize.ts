@@ -177,13 +177,14 @@ export function parseUserName(user: UserConfig): {
   // Remita requires both firstName and lastName, so we use the same value for both
   // Handles: "Madonna" → { firstName: "Madonna", lastName: "Madonna" }
   if (nameParts.length === 1) {
-    return { firstName: nameParts[0], lastName: nameParts[0] };
+    const name = nameParts[0] || '';
+    return { firstName: name, lastName: name };
   }
 
   // Standard case: first part becomes firstName, remaining parts join as lastName
   // Handles: "John Doe" → { firstName: "John", lastName: "Doe" }
   return {
-    firstName: nameParts[0],
-    lastName: nameParts.slice(1).join(" "),
+    firstName: nameParts[0] || '',
+    lastName: nameParts.slice(1).join(' '),
   };
 }
