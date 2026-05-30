@@ -1,5 +1,13 @@
 # @use-africa-pay/core
 
+## 1.3.1
+
+### Patch Changes
+
+- f1b5bf7: fix(core): resolve script loading race condition and improve retry logic. This ensures that failed script loads can be retried and prevents returning a rejected promise for subsequent calls.
+- 02f045e: feat: add testMode support, SEO keywords, and fix Remita environments
+- 93de93d: feat(remita): add smart name
+
 ## 1.3.0
 
 ### Minor Changes
