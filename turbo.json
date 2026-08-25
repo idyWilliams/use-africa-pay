@@ -9,6 +9,9 @@
       "cache": false,
       "persistent": true
     },
-    "lint": {}
+    "lint": {},
+    "test": {
+      "dependsOn": ["build"]
+    }
   }
 }

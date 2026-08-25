@@ -1,5 +1,11 @@
 # @use-africa-pay/core
 
+## 1.4.0
+
+### Minor Changes
+
+- Add Vitest testing infrastructure, improve input sanitization, and standardize error boundaries for Monnify and Remita adapters.
+
 ## 1.3.2
 
 ### Patch Changes

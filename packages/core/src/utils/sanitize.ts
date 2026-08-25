@@ -32,8 +32,8 @@ export const sanitizeName = (name: string): string => {
   let cleaned = name.replace(/<[^>]*>/g, "");
 
   // Remove potentially dangerous characters but keep international characters
-  // Allow letters, numbers, spaces, hyphens, apostrophes, and dots
-  cleaned = cleaned.replace(/[^\p{L}\p{N}\s\-'.]/gu, "");
+  // Allow letters, numbers, spaces, hyphens, apostrophes, dots, and parentheses
+  cleaned = cleaned.replace(/[^\p{L}\p{N}\s\-'.()]/gu, "");
 
   return cleaned.trim();
 };
@@ -45,7 +45,11 @@ export const sanitizePhone = (phone: string): string => {
   if (!phone) return "";
 
   // Remove everything except digits, +, -, (, ), and spaces
-  const cleaned = phone.replace(/[^\d+\-() ]/g, "").trim();
+  // Then collapse multiple spaces into one
+  const cleaned = phone
+    .replace(/[^\d+\-() ]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 
   return cleaned;
 };
@@ -116,7 +120,7 @@ export const redactSensitiveData = (message: string): string => {
   let redacted = message.replace(/[a-zA-Z0-9]{20,}/g, (match) => {
     // If it looks like a key (long alphanumeric string), redact it
     if (match.length > 20) {
-      return `***${match.slice(-4)}`;
+      return `***${match.slice(-7)}`;
     }
     return match;
   });
