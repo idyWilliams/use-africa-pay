@@ -3,6 +3,9 @@
   "version": "0.2.0",
   "description": "Next.js App Router integrations for use-africa-pay",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./dist/client/index.js",
   "types": "./dist/client/index.d.ts",
   "exports": {
