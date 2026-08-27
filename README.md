@@ -28,6 +28,10 @@ A unified, type-safe React hook for integrating African payment gateways (Paysta
 -  **Unified API**: Switch between providers with a single config change
 -  **Standardized Responses**: Rich, consistent response objects with customer details, timestamps, and metadata
 -  **Robust Error Handling**: Custom error types with helpful recovery suggestions
+-  **Smart Preflight Validation**: Check payment feasibility before showing UI to prevent user frustration
+-  **Intelligent Error Recovery**: Context-aware suggestions based on error type and provider
+-  **Payment Analytics**: Track success rates per provider to optimize your payment strategy
+-  **Automatic Retry Logic**: Exponential backoff for transient network failures
 -  **Production-Ready Security**: Input sanitization, HTTPS enforcement, error redaction, and timeout protection
 -  **Lazy Loading**: SDKs loaded only when needed, keeping bundle size small
 -  **Type-Safe**: Full TypeScript support for configuration and responses
@@ -232,14 +236,147 @@ All providers require:
 
 Provider-specific requirements documented in table above.
 
+## Advanced Features
+
+### Payment Preflight Validation
+
+Validate payment configuration before showing the payment UI to prevent user frustration:
+
+```tsx
+import { usePaymentPreflight } from '@use-africa-pay/core';
+
+const CheckoutForm = () => {
+  const { checkPreflight } = usePaymentPreflight();
+
+  const handleValidation = () => {
+    const result = checkPreflight({
+      amount: 500000,
+      currency: 'NGN',
+      provider: 'paystack',
+      user: { email: 'customer@example.com' }
+    });
+
+    if (!result.isValid) {
+      console.error('Validation issues:', result.issues);
+      return;
+    }
+
+    if (result.warnings.length > 0) {
+      console.warn('Warnings:', result.warnings);
+    }
+
+    // Proceed with payment
+  };
+};
+```
+
+### Smart Error Recovery
+
+Get context-aware recovery suggestions based on error type and provider:
+
+```tsx
+import { ErrorRecovery } from '@use-africa-pay/core';
+
+const PaymentComponent = () => {
+  const handleError = (error: PaymentError) => {
+    const suggestion = ErrorRecovery.getSuggestion(error, 'paystack');
+    
+    console.log(suggestion.title);      // "Connection Issue"
+    console.log(suggestion.message);    // Detailed explanation
+    console.log(suggestion.actions);    // Suggested actions
+    console.log(suggestion.severity);   // "low" | "medium" | "high"
+
+    // Check if error is retryable
+    if (ErrorRecovery.isRetryable(error)) {
+      // Implement retry logic
+    }
+  };
+};
+```
+
+### Payment Analytics
+
+Track payment success rates to optimize your provider strategy:
+
+```tsx
+import { usePaymentAnalytics } from '@use-africa-pay/core';
+
+const PaymentDashboard = () => {
+  const { recordPayment, startTracking, getProviderStats, getBestProvider } = usePaymentAnalytics({
+    maxHistorySize: 100,
+    persistToStorage: true
+  });
+
+  const handlePayment = async () => {
+    startTracking();
+    // ... initialize payment
+  };
+
+  const handleSuccess = (response) => {
+    recordPayment({
+      provider: 'paystack',
+      status: 'success',
+      amount: 500000,
+    });
+  };
+
+  const stats = getProviderStats();
+  const bestProvider = getBestProvider(); // Returns best performing provider
+};
+```
+
+### Automatic Retry Logic
+
+Implement intelligent retry with exponential backoff for transient failures:
+
+```tsx
+import { usePaymentRetry } from '@use-africa-pay/core';
+
+const PaymentComponent = () => {
+  const { executeWithRetry, retryState, reset } = usePaymentRetry({
+    maxAttempts: 3,
+    exponentialBackoff: true,
+    onRetryAttempt: (attempt, error) => {
+      console.log(`Retry attempt ${attempt}:`, error.message);
+    }
+  });
+
+  const handlePayment = async () => {
+    try {
+      await executeWithRetry(async () => {
+        // Your payment operation here
+        await initializePayment({ /* config */ });
+      });
+    } catch (error) {
+      console.error('Failed after all retries:', error);
+    }
+  };
+
+  return (
+    <div>
+      <button onClick={handlePayment} disabled={retryState.isRetrying}>
+        {retryState.isRetrying ? `Retrying (${retryState.attempt})` : 'Pay Now'}
+      </button>
+      {retryState.nextRetryIn && (
+        <span>Retrying in {retryState.nextRetryIn}ms...</span>
+      )}
+    </div>
+  );
+};
+```
+
 ## Best Practices
 
 1. **Always use unique references**: Generate unique transaction references to avoid duplicates
 2. **Handle all callbacks**: Implement `onSuccess`, `onClose`, and `onError` for complete UX
 3. **Validate before payment**: Use the built-in validation or add your own checks
-4. **Log errors properly**: Use `error.code` and `error.provider` for debugging
-5. **Test with sandbox keys**: All providers offer test/sandbox environments
-6. **Verify on server**: Always verify payments on your backend before granting access
+4. **Use preflight validation**: Check payment feasibility before showing UI
+5. **Implement smart error recovery**: Use context-aware suggestions for better UX
+6. **Track analytics**: Monitor success rates to optimize provider selection
+7. **Use retry logic**: Implement automatic retry for transient failures
+8. **Log errors properly**: Use `error.code` and `error.provider` for debugging
+9. **Test with sandbox keys**: All providers offer test/sandbox environments
+10. **Verify on server**: Always verify payments on your backend before granting access
 
 ## Security
 
