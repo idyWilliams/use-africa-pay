@@ -1,5 +1,12 @@
 # @use-africa-pay/next
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @use-africa-pay/core@2.0.0
+
 ## 0.2.0
 
 ### Minor Changes

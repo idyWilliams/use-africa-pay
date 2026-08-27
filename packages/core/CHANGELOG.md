@@ -1,5 +1,11 @@
 # @use-africa-pay/core
 
+## 2.0.0
+
+### Major Changes
+
+- Add usePaymentPreflight, usePaymentAnalytics, usePaymentRetry, and ErrorRecovery utilities
+
 ## 1.4.0
 
 ### Minor Changes
