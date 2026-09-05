@@ -1,6 +1,6 @@
 {
   "name": "@use-africa-pay/next",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Next.js App Router integrations for use-africa-pay",
   "type": "module",
   "publishConfig": {
@@ -30,7 +30,7 @@
     "clean": "rm -rf dist"
   },
   "peerDependencies": {
-    "next": "^13.0.0 || ^14.0.0 || ^15.0.0",
+    "next": "^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0",
     "react": "^18.2.0 || ^19.0.0",
     "react-dom": "^18.2.0 || ^19.0.0"
   },

@@ -15,6 +15,10 @@ import {
   sanitizeMetadata,
   redactSensitiveData,
 } from './utils/sanitize';
+import { PaystackAdapter } from './adapters/paystack';
+import { FlutterwaveAdapter } from './adapters/flutterwave';
+import { MonnifyAdapter } from './adapters/monnify';
+import { RemitaAdapter } from './adapters/remita';
 
 export const useAfricaPay = () => {
   const [loading, setLoading] = useState(false);
@@ -93,20 +97,37 @@ export const useAfricaPay = () => {
     setLoading(true);
     setError(null);
 
-    const { provider, onError, adapter, ...config } = props;
+    const { provider, adapter, ...config } = props;
 
     // Use passed adapter or fallback to what's in ref (if any)
-    const currentAdapter = adapter || adapterRef.current;
+    let currentAdapter = adapter || adapterRef.current;
 
+    // Backward compatibility: Auto-select adapter based on provider if none provided
     if (!currentAdapter) {
-      const err = new ValidationError(
-        `No adapter provided for ${provider}`,
-        'Please pass an adapter instance (e.g. adapter: PaystackAdapter) to initializePayment'
-      );
-      setLoading(false);
-      setError(err);
-      if (onError) onError(err);
-      return;
+      switch (provider) {
+        case 'paystack':
+          currentAdapter = PaystackAdapter;
+          break;
+        case 'flutterwave':
+          currentAdapter = FlutterwaveAdapter;
+          break;
+        case 'monnify':
+          currentAdapter = MonnifyAdapter;
+          break;
+        case 'remita':
+          currentAdapter = RemitaAdapter;
+          break;
+        default: {
+          const err = new ValidationError(
+            `No adapter provided for ${provider}`,
+            'Please pass an adapter instance (e.g. adapter: PaystackAdapter) to initializePayment'
+          );
+          setLoading(false);
+          setError(err);
+          if (props.onError) props.onError(err);
+          return;
+        }
+      }
     }
 
     adapterRef.current = currentAdapter;
@@ -190,7 +211,7 @@ export const useAfricaPay = () => {
         raw: paymentError.rawError
       });
 
-      if (onError) onError(paymentError);
+      if (props.onError) props.onError(paymentError);
     }
   };
 
