@@ -7,6 +7,7 @@
     <b>The Unified Payment SDK for Africa</b><br/>
     Integrate Paystack, Flutterwave, Monnify, and Remita with a single, type-safe API.
   </p>
+  <p> <a href="https://idywilliams.github.io/documentation-use-africa-pay/"><b>UPDATED DOCUMENTATION WITH EXAMPLE USAGE</b></a></p>
   <p>
     <a href="https://www.npmjs.com/package/@use-africa-pay/core">
       <img src="https://img.shields.io/npm/v/@use-africa-pay/core?style=flat-square" alt="NPM Version" />
