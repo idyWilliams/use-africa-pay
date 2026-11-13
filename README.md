@@ -213,6 +213,32 @@ initializePayment({
 });
 ```
 
+### Flutterwave
+
+```tsx
+import { useAfricaPay, FlutterwaveAdapter } from '@use-africa-pay/core';
+
+// ... inside component
+initializePayment({
+  provider: 'flutterwave',
+  adapter: FlutterwaveAdapter,
+  publicKey: 'YOUR_FLUTTERWAVE_PUBLIC_KEY',
+  amount: 500000, // ₦5,000 in kobo (auto-converted to major currency denomination)
+  currency: 'NGN',
+  reference: 'FLW_' + Date.now(),
+  user: {
+    email: 'customer@example.com',
+    phonenumber: '08012345678', // Required for Flutterwave (or user.phone)
+    name: 'John Doe',
+  },
+  onSuccess: (response) => {
+    console.log('Payment successful:', response.reference);
+  },
+});
+```
+
+**Phone number requirement:** Flutterwave requires a customer phone number (`phonenumber` or `phone`). Missing or empty phone numbers will trigger a `ValidationError`.
+
 ## API Reference
 
 ### `useAfricaPay()`
