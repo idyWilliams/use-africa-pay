@@ -13,10 +13,6 @@ export const FlutterwaveAdapter: AdapterInterface = {
     await loadScript('https://checkout.flutterwave.com/v3.js');
   },
   initialize: (config: AdapterConfig) => {
-    if (!config.user.phonenumber) {
-      console.warn('Flutterwave requires a phone number for some payment methods.');
-    }
-
     window.FlutterwaveCheckout({
       public_key: config.publicKey,
       tx_ref: config.reference,
@@ -25,7 +21,7 @@ export const FlutterwaveAdapter: AdapterInterface = {
       payment_options: config.payment_options || 'card,mobilemoney,ussd',
       customer: {
         email: config.user.email,
-        phone_number: config.user.phonenumber,
+        phone_number: config.user.phonenumber || config.user.phone,
         name: config.user.name,
       },
       meta: config.metadata,

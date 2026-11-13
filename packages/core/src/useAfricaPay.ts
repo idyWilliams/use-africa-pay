@@ -20,6 +20,70 @@ import { FlutterwaveAdapter } from './adapters/flutterwave';
 import { MonnifyAdapter } from './adapters/monnify';
 import { RemitaAdapter } from './adapters/remita';
 
+export const validateConfig = (props: InitializePaymentProps): void => {
+  const { provider, user, amount, publicKey } = props;
+
+  // Basic validation
+  if (!publicKey) {
+    throw new ValidationError('Public key is required', 'Please provide your payment provider public key');
+  }
+
+  if (!user || !user.email) {
+    throw new ValidationError('Customer email is required', 'Please provide a valid customer email address');
+  }
+
+  if (amount <= 0) {
+    throw new ValidationError('Amount must be greater than 0', 'Please provide a valid payment amount');
+  }
+
+  // Provider-specific validation
+  if (props.provider === 'monnify') {
+    if (!props.contractCode) {
+      throw new ValidationError(
+        'Contract Code is required for Monnify',
+        'Please provide your Monnify contract code'
+      );
+    }
+    if (!props.user?.name) {
+      throw new ValidationError(
+        'Customer name is required for Monnify',
+        'Please provide the customer name'
+      );
+    }
+  }
+
+  if (props.provider === 'flutterwave' || (props as any).adapter === FlutterwaveAdapter) {
+    const phone = props.user?.phonenumber || props.user?.phone;
+    if (!phone || (typeof phone === 'string' && phone.trim() === '')) {
+      throw new ValidationError(
+        'Phone number is required for Flutterwave',
+        'Please provide the customer phone number'
+      );
+    }
+  }
+
+  if (props.provider === 'remita') {
+    if (!props.merchantId) {
+      throw new ValidationError(
+        'Merchant ID is required for Remita',
+        'Please provide your Remita merchant ID'
+      );
+    }
+    if (!props.serviceTypeId) {
+      throw new ValidationError(
+        'Service Type ID is required for Remita',
+        'Please provide your Remita service type ID'
+      );
+    }
+    if (!props.user?.name) {
+      throw new ValidationError(
+        'Customer name is required for Remita',
+        'Please provide the customer name'
+      );
+    }
+  }
+};
+
 export const useAfricaPay = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<PaymentError | null>(null);
@@ -28,69 +92,6 @@ export const useAfricaPay = () => {
   const reset = () => {
     setLoading(false);
     setError(null);
-  };
-
-  const validateConfig = (props: InitializePaymentProps): void => {
-    const { provider, user, amount, publicKey } = props;
-
-    // Basic validation
-    if (!publicKey) {
-      throw new ValidationError('Public key is required', 'Please provide your payment provider public key');
-    }
-
-    if (!user.email) {
-      throw new ValidationError('Customer email is required', 'Please provide a valid customer email address');
-    }
-
-    if (amount <= 0) {
-      throw new ValidationError('Amount must be greater than 0', 'Please provide a valid payment amount');
-    }
-
-    // Provider-specific validation
-    if (props.provider === 'monnify') {
-      if (!props.contractCode) {
-        throw new ValidationError(
-          'Contract Code is required for Monnify',
-          'Please provide your Monnify contract code'
-        );
-      }
-      if (!props.user.name) {
-        throw new ValidationError(
-          'Customer name is required for Monnify',
-          'Please provide the customer name'
-        );
-      }
-    }
-
-    if (props.provider === 'flutterwave') {
-      if (!props.user.phonenumber && !props.user.phone) {
-        throw new ValidationError(
-          'Phone number is required for Flutterwave',
-          'Please provide the customer phone number'
-        );
-      }
-    }
-
-    if (props.provider === 'remita') {
-      if (!props.merchantId) {
-        throw new ValidationError(
-          'Merchant ID is required for Remita',
-          'Please provide your Remita merchant ID'
-        );
-      }
-      if (!props.serviceTypeId) {
-        throw new ValidationError(
-          'Service Type ID is required for Remita',
-          'Please provide your Remita service type ID'
-        );
-      }
-      if (!props.user.name) {
-        throw new ValidationError(
-          'Customer name is required for Remita',
-          'Please provide the customer name'
-        );
-      }
-    }
   };
 
   const initializePayment = async (props: InitializePaymentProps) => {
@@ -124,7 +125,7 @@ export const useAfricaPay = () => {
           );
           setLoading(false);
           setError(err);
-          if (props.onError) props.onError(err);
+          if ((props as any).onError) (props as any).onError(err);
           return;
         }
       }
