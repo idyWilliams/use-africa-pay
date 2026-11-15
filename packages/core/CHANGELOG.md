@@ -1,5 +1,11 @@
 # @use-africa-pay/core
 
+## 2.1.1
+
+### Patch Changes
+
+- b0e275d: Fix Flutterwave phone number validation: enforce phone number in `validateConfig()` to throw `ValidationError` when missing, and remove legacy `console.warn` from `FlutterwaveAdapter`.
+
 ## 2.1.0
 
 ### Minor Changes
