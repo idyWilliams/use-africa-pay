@@ -12,7 +12,7 @@ import {
   sanitizeName,
   sanitizePhone,
   sanitizeReference,
-  sanitizeMetadata,
+  sanitizeMetadata, 
   redactSensitiveData,
 } from './utils/sanitize';
 import { PaystackAdapter } from './adapters/paystack';
